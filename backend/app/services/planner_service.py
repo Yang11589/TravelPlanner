@@ -1,17 +1,23 @@
+from app.schemas.plan import Plan
+from app.schemas.place import Place
+from app.schemas.trip import TripResponse
+
 def generate_plan(city: str, days: int):
     itinerary = []
 
     for d in range(days):
-        itinerary.append({
-            "day": d + 1,
-            "places": [
-                {"name": f"{city} Spot {d*2+1}", "type": "sight"},
-                {"name": f"{city} Spot {d*2+2}", "type": "food"},
-            ]
-        })
+        itinerary.append(
+            Plan(
+                day = d + 1,
+                places = [
+                    Place(name = f"{city} Spot {d*2+1}", type = "sight"),
+                    Place(name = f"{city} Spot {d*2+2}", type = "food"),
+                ]
+            )
+        )
 
-    return {
-        "city": city,
-        "days": days,
-        "itinerary": itinerary
-    }
+    return TripResponse(
+        city = city,
+        days = days,
+        itinerary = itinerary)
+    

@@ -1,8 +1,9 @@
 from fastapi import APIRouter
 from app.services.planner_service import generate_plan
+from app.schemas.trip import TripRequest,TripResponse
 
 router = APIRouter()
 
-@router.post("/plan")
-def plan(city: str, days: int):
-    return generate_plan(city,days)
+@router.post("/plan",response_model = TripResponse)
+def plan(req: TripRequest):
+    return generate_plan(req.city,req.days)
