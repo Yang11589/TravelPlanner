@@ -8,7 +8,6 @@ class Place(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(100), nullable=False)
     type = Column(String(50), nullable=False)
+    plan_id = Column(Integer, ForeignKey("plans.id"), nullable=False)
 
-    day_plan_id = Column(Integer, ForeignKey("plan.id"), nullable=False)
-
-    day_plan = relationship("Plan", back_populates="places")
+    plan = relationship("Plan", back_populates="places")

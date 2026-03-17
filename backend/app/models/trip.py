@@ -9,7 +9,7 @@ class Trip(Base):
     city = Column(String(100), nullable=False)
     days = Column(Integer, nullable=False)
 
-    day_plans = relationship(
+    plans = relationship(
         "Plan",
         back_populates="trip",
         cascade="all, delete-orphan"

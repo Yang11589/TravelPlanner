@@ -3,14 +3,13 @@ from sqlalchemy.orm import relationship
 from app.db.base import Base
 
 class Plan(Base):
-    __tablename__ = "plan"
-
+    __tablename__ = "plans"
     id = Column(Integer, primary_key=True, index=True)
     day = Column(Integer, nullable=False)
 
     trip_id = Column(Integer, ForeignKey("trips.id"), nullable=False)
 
-    trip = relationship("Trip", back_populates="plan")
+    trip = relationship("Trip", back_populates="plans")
 
     places = relationship(
         "Place",
