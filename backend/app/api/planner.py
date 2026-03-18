@@ -9,6 +9,9 @@ from app.schemas.trip_list import TripListResponse
 from app.services.get_trip import get_trips
 
 from app.services.get_trip_by_id import get_trip_by_id
+from app.services.delete_trip import delete_trip
+
+
 
 
 router = APIRouter()
@@ -40,3 +43,12 @@ def get_trip(trip_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Trip not found")
 
     return trip
+
+@router.delete("/trips/{trip_id}")
+def remove_trip(trip_id: int, db: Session = Depends(get_db)):
+    success = delete_trip(db, trip_id)
+
+    if not success:
+        raise HTTPException(status_code=404, detail="Trip not found")
+
+    return {"message": "Trip deleted successfully"}
