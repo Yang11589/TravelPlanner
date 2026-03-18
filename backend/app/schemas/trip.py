@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import List
 from app.schemas.plan import Plan
 
@@ -9,4 +9,4 @@ class TripRequest(BaseModel):
 class TripResponse(BaseModel):
     city: str
     days: int
-    itinerary: List[Plan]
+    itinerary: List[Plan] = Field(alias="plans")
