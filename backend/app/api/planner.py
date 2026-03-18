@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, HTTPException
 from app.schemas.trip import TripRequest,TripResponse
 from sqlalchemy.orm import Session
 from app.db.deps import get_db
@@ -7,6 +7,8 @@ from app.services.save_trip import save_trip
 
 from app.schemas.trip_list import TripListResponse
 from app.services.get_trip import get_trips
+
+from app.services.get_trip_by_id import get_trip_by_id
 
 
 router = APIRouter()
@@ -29,3 +31,12 @@ def list_trips(
         "total": total,
         "items": trips
     }
+
+@router.get("/trips/{trip_id}", response_model=TripResponse)
+def get_trip(trip_id: int, db: Session = Depends(get_db)):
+    trip = get_trip_by_id(db, trip_id)
+
+    if not trip:
+        raise HTTPException(status_code=404, detail="Trip not found")
+
+    return trip
