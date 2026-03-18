@@ -9,4 +9,4 @@ class TripRequest(BaseModel):
 class TripResponse(BaseModel):
     city: str
     days: int
-    itinerary: List[Plan] = Field(alias="plans")
+    itinerary: List[Plan] 

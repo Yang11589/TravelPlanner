@@ -11,6 +11,8 @@ from app.services.get_trip import get_trips
 from app.services.get_trip_by_id import get_trip_by_id
 from app.services.delete_trip import delete_trip
 
+from app.services.mapper import trips_to_response
+from app.services.mapper import trip_to_response
 
 
 
@@ -29,10 +31,11 @@ def list_trips(
     db: Session = Depends(get_db)
 ):
     total, trips = get_trips(db, limit=limit, offset=offset)
+    items = trips_to_response(trips)
 
     return {
         "total": total,
-        "items": trips
+        "items": items
     }
 
 @router.get("/trips/{trip_id}", response_model=TripResponse)
@@ -42,7 +45,7 @@ def get_trip(trip_id: int, db: Session = Depends(get_db)):
     if not trip:
         raise HTTPException(status_code=404, detail="Trip not found")
 
-    return trip
+    return trip_to_response(trip)
 
 @router.delete("/trips/{trip_id}")
 def remove_trip(trip_id: int, db: Session = Depends(get_db)):
