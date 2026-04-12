@@ -1,15 +1,21 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
-
+import { useEffect } from "react";
+import { useApi } from "../hooks/useApi";
+import { getTrips } from "../api/api";
 
 export default function TripsPage() {
-  const [trips, setTrips] = useState([]);
+  const {
+    request: fetchTrips,
+    data,
+    loading,
+  } = useApi(getTrips);
 
   useEffect(() => {
-    axios.get("http://127.0.0.1:8000/api/trips")
-      .then(res => setTrips(res.data.items));
-  }, []);
+    fetchTrips();
+  }, [fetchTrips]);
 
+  const trips = data?.items || [];
+
+  if (loading) return <p>Loading...</p>;
 
   return (
     <div style={{ padding: 40 }}>
@@ -19,7 +25,7 @@ export default function TripsPage() {
         <div key={index} style={{ border: "1px solid #ccc", margin: 10, padding: 10 }}>
           <h2>{trip.city} ({trip.days} days)</h2>
 
-          {trip.itinerary.map(day => (
+          {trip.itinerary.map((day) => (
             <div key={day.day}>
               <strong>Day {day.day}</strong>
               <ul>
@@ -34,4 +40,3 @@ export default function TripsPage() {
     </div>
   );
 }
-
