@@ -10,8 +10,8 @@ def generate_plan(city: str, days: int):
             Plan(
                 day = d + 1,
                 places = [
-                    Place(name = f"{city} Spot {d*2+1}", type = "sight"),
-                    Place(name = f"{city} Spot {d*2+2}", type = "food"),
+                    Place(name = f"Spot {d*2+1}", type = "sight"),
+                    Place(name = f"Spot {d*2+2}", type = "food"),
                 ]
             )
         )

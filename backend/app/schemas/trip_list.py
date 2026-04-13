@@ -7,3 +7,4 @@ from app.schemas.trip import TripResponse
 class TripListResponse(BaseModel):
     total: int
     items: List[TripResponse]
+    
