@@ -107,20 +107,23 @@ const ChatBox = () => {
           >
             <h3 className="font-headline text-2xl font-bold text-primary mb-4">Your Curated Itinerary</h3>
             <div className="prose prose-slate max-w-none text-on-surface-variant leading-relaxed">
-              <h2>{result.city} ({result.days} days)
-                  {result.itinerary.map((day) => (
-                    <div key={day.day} style={{ marginTop: 20 }}>
-                      <h3>Day {day.day}</h3>
+              <h2>
+                {result.city} ({result.days} days)
+              </h2>
 
-                      <ul>
-                        {day.places.map((p, i) => (
-                          <li key={i}>
-                            {p.type === "sight" ? "sight: " : "food: "} {p.name}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ))}</h2>
+              {result.itinerary.map((day) => (
+                <div key={day.day} style={{ marginTop: 20 }}>
+                  <h3>Day {day.day}</h3>
+
+                  <ul>
+                    {day.places.map((p, i) => (
+                      <li key={i}>
+                        {p.type === "attraction" ? "sight: " : "food: "} {p.name}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
               <p className="whitespace-pre-wrap">{result.createPlan}</p>
             </div>
           </motion.div>
