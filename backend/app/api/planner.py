@@ -14,13 +14,17 @@ from app.services.delete_trip import delete_trip
 from app.services.mapper import trips_to_response
 from app.services.mapper import trip_to_response
 
+from app.api.user_deps import get_current_user
+from app.models.user import User
+
 
 
 router = APIRouter()
 
 @router.post("/plan",response_model = TripResponse)
-def plan(req: TripRequest, db: Session = Depends(get_db)):
+def plan(req: TripRequest, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     trip_data = generate_plan(req.city, req.days)
+    trip_data.user_id = current_user.id
     save_trip(db, trip_data)
     return trip_data
 
@@ -28,9 +32,10 @@ def plan(req: TripRequest, db: Session = Depends(get_db)):
 def list_trips(
     limit: int = Query(10, ge=1, le=50),
     offset: int = Query(0, ge=0),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
-    total, trips = get_trips(db, limit=limit, offset=offset)
+    total, trips = get_trips(db, user_id=current_user.id, limit=limit, offset=offset)
     items = trips_to_response(trips)
 
     return {
@@ -39,7 +44,7 @@ def list_trips(
     }
 
 @router.get("/trips/{trip_id}", response_model=TripResponse)
-def get_trip(trip_id: int, db: Session = Depends(get_db)):
+def get_trip(trip_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     trip = get_trip_by_id(db, trip_id)
 
     if not trip:
@@ -48,7 +53,7 @@ def get_trip(trip_id: int, db: Session = Depends(get_db)):
     return trip_to_response(trip)
 
 @router.delete("/trips/{trip_id}")
-def remove_trip(trip_id: int, db: Session = Depends(get_db)):
+def remove_trip(trip_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     success = delete_trip(db, trip_id)
 
     if not success:
