@@ -8,7 +8,8 @@ from app.schemas.trip import TripResponse
 def save_trip(db: Session, trip_data: TripResponse):
     trip = Trip(
         city=trip_data.city,
-        days=trip_data.days
+        days=trip_data.days,
+        user_id=trip_data.user_id
     )
 
     for plan in trip_data.itinerary:

@@ -8,6 +8,8 @@ def trip_to_response(trip: Trip) -> TripResponse:
     return TripResponse(
         city=trip.city,
         days=trip.days,
+        user_id=trip.user_id,
+        is_saved=True,
         itinerary=[
             PlanSchema(
                 day=dp.day,

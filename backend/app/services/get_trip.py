@@ -4,8 +4,9 @@ from app.models.plan import Plan
 from sqlalchemy import desc
 
 
-def get_trips(db: Session, limit: int = 10, offset: int = 0):
-    query = db.query(Trip)
+def get_trips(db: Session, user_id: int, limit: int = 10, offset: int = 0):
+    query = db.query(Trip).filter(Trip.user_id == user_id)
+
 
     total = query.count()
 

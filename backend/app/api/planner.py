@@ -16,16 +16,22 @@ from app.services.mapper import trip_to_response
 
 from app.api.user_deps import get_current_user
 from app.models.user import User
+from typing import Optional
 
 
 
 router = APIRouter()
 
 @router.post("/plan",response_model = TripResponse)
-def plan(req: TripRequest, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def plan(req: TripRequest, db: Session = Depends(get_db), current_user: Optional[User] = Depends(get_current_user)):
     trip_data = generate_plan(req.city, req.days)
-    trip_data.user_id = current_user.id
-    save_trip(db, trip_data)
+    if current_user:
+        trip_data.user_id = current_user.id
+        save_trip(db, trip_data)
+        trip_data.is_saved = True
+    else:
+            trip_data.is_saved = False
+            
     return trip_data
 
 @router.get("/trips", response_model=TripListResponse)

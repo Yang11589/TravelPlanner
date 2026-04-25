@@ -5,8 +5,6 @@ from app.api.planner import router as planner_router
 
 app = FastAPI()
 
-# app.include_router(router, prefix="/api")
-# app.include_router(router, prefix="/api/auth", tags=["auth"])
 app.include_router(auth_router, prefix="/api")
 app.include_router(planner_router, prefix="/api")
 

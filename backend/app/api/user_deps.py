@@ -4,14 +4,17 @@ from app.core.security import decode_token
 from app.db.deps import get_db
 from app.models.user import User
 from sqlalchemy.orm import Session
+from typing import Optional
 
-security = HTTPBearer()
+security = HTTPBearer(auto_error=False)
 
 # Dependency to get the current authenticated user from JWT token
 async def get_current_user(
-    credentials: HTTPAuthorizationCredentials = Depends(security),
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(security),
     db: Session = Depends(get_db)
-) -> User:
+) -> Optional[User]:
+    if not credentials:
+        return None # No credentials provided, return None to indicate unauthenticated user
     token = credentials.credentials
     payload = decode_token(token)
     
