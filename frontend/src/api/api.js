@@ -21,6 +21,10 @@ export const login = (credentials) => {
   return axios.post(`${API_BASE}/auth/login`, credentials);
 };
 
+export const register = (credentials) => {
+  return axios.post(`${API_BASE}/auth/register`, credentials);
+};
+
 export const createPlan = (data) => {
   return axios.post(`${API_BASE}/plan`, data);
 };
