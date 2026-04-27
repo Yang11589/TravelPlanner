@@ -25,6 +25,14 @@ export const register = (credentials) => {
   return axios.post(`${API_BASE}/auth/register`, credentials);
 };
 
+export const getCurrentUser = () => {
+  return axios.get(`${API_BASE}/auth/me`);
+};
+
+export const logout = () => {
+  return axios.post(`${API_BASE}/auth/logout`);
+};
+
 export const createPlan = (data) => {
   return axios.post(`${API_BASE}/plan`, data);
 };
