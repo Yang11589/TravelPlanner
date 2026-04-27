@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from "react-router-dom";
+import { UserCircle } from 'lucide-react';
 
 const Navbar = () => (
   <nav className="fixed top-0 w-full z-50 bg-[#f7f9fb]/80 backdrop-blur-xl shadow-sm shadow-cyan-900/5">
@@ -15,6 +16,11 @@ const Navbar = () => (
           to="/trips"            
           className="text-slate-600 font-medium hover:text-primary hover:opacity-80 transition-all duration-300 active:scale-95">
            My Trips
+        </Link>
+
+        {/* User Icon */}
+        <Link to="/login" className="text-slate-600 hover:text-primary transition-colors cursor-pointer">
+            <UserCircle size={28} />
         </Link>
 
         {/* Plan */}

@@ -1,14 +1,16 @@
 import { useState } from "react";
-import { Sparkles, Send, MapPin, Calendar } from 'lucide-react';
+import { Sparkles, Send, MapPin, Calendar, LogIn } from 'lucide-react';
 import { useApi } from '../hooks/useApi';
 import { createPlan } from "../api/api"
 import { motion } from "framer-motion";
+import { Link } from 'react-router-dom';
 
 const ChatBox = () => {
   const [city, setCity] = useState('');
   const [days, setDays] = useState(1);
   const [cityError, setCityError] = useState('');
   const { request: getTravelPlan, loading, error, data: result } = useApi(createPlan);
+  const isLoggedIn = !!localStorage.getItem("access_token");
 
   const handleSend = async () => {
     if (!city.trim()) {
@@ -91,8 +93,8 @@ const ChatBox = () => {
             </div>
             
             {error && (
-              <div className="text-red-500 text-sm mt-2 px-2">
-                Note: {error.message || String(error)}. (Using demo fallback)
+              <div className="text-red-500 text-sm mt-2 px-2 bg-red-50 p-3 rounded border border-red-200">
+                <strong>Error:</strong> {error.response?.data?.detail || error.message || "Request failed"}
               </div>
             )}
           </div>
@@ -105,7 +107,28 @@ const ChatBox = () => {
             animate={{ opacity: 1, y: 0 }}
             className="bg-surface-container-lowest rounded-xl shadow-md p-8 border border-primary/10"
           >
-            <h3 className="font-headline text-2xl font-bold text-primary mb-4">Your Curated Itinerary</h3>
+            <div className="flex justify-between items-start mb-6">
+              <h3 className="font-headline text-2xl font-bold text-primary">Your Curated Itinerary</h3>
+              {!result.is_saved && (
+                <div className="text-xs bg-amber-50 border border-amber-200 text-amber-700 px-3 py-1 rounded-full">
+                  ⚠️ Not Saved
+                </div>
+              )}
+              {result.is_saved && (
+                <div className="text-xs bg-green-50 border border-green-200 text-green-700 px-3 py-1 rounded-full">
+                  ✓ Saved
+                </div>
+              )}
+            </div>
+
+            {!result.is_saved && !isLoggedIn && (
+              <div className="mb-6 bg-blue-50 border-l-4 border-primary p-4 rounded">
+                <p className="text-sm text-on-surface mb-3">
+                  Your plan will be temporary. <Link to="/login" className="text-primary font-semibold hover:underline">Sign in</Link> to save it permanently.
+                </p>
+              </div>
+            )}
+            
             <div className="prose prose-slate max-w-none text-on-surface-variant leading-relaxed">
               <h2>
                 {result.city} ({result.days} days)
