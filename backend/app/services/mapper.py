@@ -4,8 +4,10 @@ from app.schemas.plan import Plan as PlanSchema
 from app.schemas.place import Place as PlaceSchema
 
 
-def trip_to_response(trip: Trip) -> TripResponse:
+def trip_to_response(trip: Trip, conversation_id: int | None = None) -> TripResponse:
     return TripResponse(
+        id=trip.id,
+        conversation_id=conversation_id,
         city=trip.city,
         days=trip.days,
         user_id=trip.user_id,

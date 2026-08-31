@@ -21,3 +21,9 @@ class Trip(Base):
         back_populates="trip",
         cascade="all, delete-orphan"
     )
+
+    conversation = relationship(
+        "Conversation", 
+        back_populates="trip",
+        cascade="all, delete-orphan"
+    )

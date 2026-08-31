@@ -13,6 +13,9 @@ class TripResponse(BaseModel):
     itinerary: List[Plan] 
     user_id: Optional[int] = None
     is_saved: Optional[bool] = None 
+    conversation_id: Optional[int] = None
+    id: Optional[int] = None
+
 
     class Config:
         from_attributes = True 

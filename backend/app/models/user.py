@@ -17,3 +17,10 @@ class User(Base):
         back_populates="user",
         cascade="all, delete-orphan"
     )
+
+    # Relationship to conversations
+    conversations = relationship(
+    "Conversation",
+    back_populates="user",
+    cascade="all, delete-orphan"
+)
