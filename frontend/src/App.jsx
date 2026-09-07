@@ -4,6 +4,7 @@ import TripsPage from "./pages/TripRecord";
 import Navbar from "./components/Navbar";
 import LoginPage from "./pages/Login";
 import RegisterPage from "./pages/Register";
+import ConversationPage from "./pages/Conversation";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path="/trips" element={<TripsPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/conversation" element={<ConversationPage />} />
 
       </Routes>
     </BrowserRouter>
