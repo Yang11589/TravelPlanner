@@ -20,7 +20,7 @@ from typing import Optional
 
 from app.services.modify_plan import generate_modified_plan
 from app.services.create_conversation import create_trip_for_user, get_or_create_conversation, append_message, update_trip_itinerary
-
+from app.models.trip import Trip
 
 
 router = APIRouter(prefix="/planner", tags=["planner"])

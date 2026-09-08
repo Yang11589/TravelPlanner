@@ -3,7 +3,7 @@ import { Sparkles, Send, MapPin, Calendar, LogIn } from 'lucide-react';
 import { useApi } from '../hooks/useApi';
 import { createPlan } from "../api/api"
 import { motion } from "framer-motion";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from "react-router-dom";
 
 const ChatBox = () => {
   const [city, setCity] = useState('');
@@ -11,15 +11,29 @@ const ChatBox = () => {
   const [cityError, setCityError] = useState('');
   const { request: getTravelPlan, loading, error, data: result } = useApi(createPlan);
   const isLoggedIn = !!localStorage.getItem("access_token");
+  const navigate = useNavigate();
+
 
   const handleSend = async () => {
-    if (!city.trim()) {
-      setCityError('Please enter a destination')
-      return};
-    try {
-      await getTravelPlan({ city, days });
-    } catch (err) {}
-  };
+  if (!city.trim()) {
+    setCityError("Please enter a destination");
+    return;
+  }
+
+  try {
+    const generatedPlan = await getTravelPlan({ city, days });
+
+    navigate("/conversation", {
+      state: {
+        city: generatedPlan.city,
+        days: generatedPlan.days,
+        itinerary: generatedPlan.itinerary,
+        tripId: generatedPlan.id ?? null,
+      },
+    });
+  } catch (err) {
+  }
+};
 
   return (
     <section className="max-w-7xl mx-auto px-8 py-12 lg:py-20 flex flex-col items-center">
@@ -148,6 +162,22 @@ const ChatBox = () => {
                 </div>
               ))}
               <p className="whitespace-pre-wrap">{result.createPlan}</p>
+              <button
+                type="button"
+                onClick={() =>
+                  navigate("/conversation", {
+                    state: {
+                      city: result.city,
+                      days: result.days,
+                      itinerary: result.itinerary,
+                      tripId: result.id ?? null,
+                    },
+                  })
+                }
+                className="bg-primary text-on-primary px-6 py-3 rounded-lg"
+              >
+                Adjust Plan with AI Assistant
+              </button>
             </div>
           </motion.div>
         )}

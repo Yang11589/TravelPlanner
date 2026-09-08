@@ -47,7 +47,7 @@ Output format:
 def call_gemini(prompt: str):
     try:
         return client.models.generate_content(
-            model="gemini-2.5-flash",
+            model="gemini-3.5-flash-lite",
             contents=prompt
         )
     except Exception as e:

@@ -34,9 +34,18 @@ export const logout = () => {
 };
 
 export const createPlan = (data) => {
-  return axios.post(`${API_BASE}/plan`, data);
+  return axios.post(`${API_BASE}/planner/plan`, data);
 };
 
 export const getTrips = () => {
-  return axios.get(`${API_BASE}/trips`);
+  return axios.get(`${API_BASE}/planner/trips`);
 };
+
+export async function sendChatMessage(payload) {
+  const response = await axios.post(
+    `${API_BASE}/planner/plan/chat`,
+    payload
+  );
+
+  return response.data;
+}
