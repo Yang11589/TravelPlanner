@@ -3,7 +3,6 @@ from app.schemas.trip import TripRequest,TripResponse
 from sqlalchemy.orm import Session
 from app.db.deps import get_db
 from app.services.generate_plan import generate_plan
-from app.services.save_trip import save_trip
 
 from app.schemas.trip_list import TripListResponse
 from app.services.get_trip import get_trips
@@ -21,6 +20,7 @@ from typing import Optional
 from app.services.modify_plan import generate_modified_plan
 from app.services.create_conversation import create_trip_for_user, get_or_create_conversation, append_message, update_trip_itinerary
 from app.models.trip import Trip
+from app.models.message import Message
 
 
 router = APIRouter(prefix="/planner", tags=["planner"])
@@ -30,10 +30,11 @@ def plan(req: TripRequest, db: Session = Depends(get_db), current_user: Optional
     trip_data = generate_plan(req.city, req.days)
     if current_user:
         trip_data.user_id = current_user.id
-        save_trip(db, trip_data)
         trip_data.is_saved = True
         trip, conversation = create_trip_for_user(db, trip_data, current_user.id)
+        trip_data.id = trip.id
         trip_data.conversation_id = conversation.id
+        trip_data.is_saved = True
     else:
             trip_data.is_saved = False
             trip_data.conversation_id = None
@@ -93,10 +94,10 @@ def chat_plan(
     payload: dict,
     db: Session = Depends(get_db),
     current_user: Optional[User] = Depends(get_current_user),
-):
+    ):
     message = payload.get("message", "")
-    history = payload.get("history", [])
     current_itinerary = payload.get("current_itinerary", [])
+    history = payload.get("history", [])
 
     if not current_user:
         result = generate_modified_plan(
@@ -128,8 +129,37 @@ def chat_plan(
     if not trip:
         raise HTTPException(status_code=404, detail="Trip not found")
 
-    conversation = get_or_create_conversation(db, trip.id, current_user.id)
-    append_message(db, conversation.id, "user", message, 1)
+    conversation = get_or_create_conversation(
+        db,
+        trip.id,
+        current_user.id
+    )
+
+    db_messages = (
+        db.query(Message)
+        .filter(Message.conversation_id == conversation.id)
+        .order_by(
+            Message.created_at.asc(),
+            Message.id.asc()
+        )
+        .all()
+    )
+
+    history = [
+        {
+            "role": msg.role,
+            "content": msg.content,
+        }
+        for msg in db_messages
+    ]
+
+    append_message(
+        db,
+        conversation.id,
+        "user",
+        message,
+        1
+    )
 
     result = generate_modified_plan(
         city=trip.city,
@@ -139,7 +169,12 @@ def chat_plan(
         user_message=message,
     )
 
-    update_trip_itinerary(db, trip, result["itinerary"])
+    update_trip_itinerary(
+        db,
+        trip,
+        result["itinerary"],
+    )
+
     append_message(
         db,
         conversation.id,
@@ -147,6 +182,7 @@ def chat_plan(
         result["assistant_reply"],
         result["is_valid_topic"],
     )
+
 
     return {
         "assistant_reply": result["assistant_reply"],
