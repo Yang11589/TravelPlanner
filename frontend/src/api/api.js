@@ -41,6 +41,10 @@ export const getTrips = () => {
   return axios.get(`${API_BASE}/planner/trips`);
 };
 
+export const getTripById = (tripId) => {
+  return axios.get(`${API_BASE}/planner/trips/${tripId}`);
+};
+
 export async function sendChatMessage(payload) {
   const response = await axios.post(
     `${API_BASE}/planner/plan/chat`,

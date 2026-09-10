@@ -23,14 +23,20 @@ const ChatBox = () => {
   try {
     const generatedPlan = await getTravelPlan({ city, days });
 
-    navigate("/conversation", {
-      state: {
-        city: generatedPlan.city,
-        days: generatedPlan.days,
-        itinerary: generatedPlan.itinerary,
-        tripId: generatedPlan.id ?? null,
-      },
-    });
+    const conversationState = {
+      city: generatedPlan.city,
+      days: generatedPlan.days,
+      itinerary: generatedPlan.itinerary,
+      tripId: generatedPlan.id ?? null,
+      messages: [],
+    };
+
+    navigate(
+      generatedPlan.id
+        ? `/conversation/${generatedPlan.id}`
+        : "/conversation",
+      { state: conversationState },
+    );
   } catch (err) {
   }
 };
@@ -165,14 +171,20 @@ const ChatBox = () => {
               <button
                 type="button"
                 onClick={() =>
-                  navigate("/conversation", {
-                    state: {
-                      city: result.city,
-                      days: result.days,
-                      itinerary: result.itinerary,
-                      tripId: result.id ?? null,
+                  navigate(
+                    result.id
+                      ? `/conversation/${result.id}`
+                      : "/conversation",
+                    {
+                      state: {
+                        city: result.city,
+                        days: result.days,
+                        itinerary: result.itinerary,
+                        tripId: result.id ?? null,
+                        messages: [],
+                      },
                     },
-                  })
+                  )
                 }
                 className="bg-primary text-on-primary px-6 py-3 rounded-lg"
               >

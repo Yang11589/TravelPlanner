@@ -16,6 +16,7 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/conversation" element={<ConversationPage />} />
+        <Route path="/conversation/:tripId" element={<ConversationPage />} />
 
       </Routes>
     </BrowserRouter>

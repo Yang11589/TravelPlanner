@@ -5,26 +5,33 @@ from app.schemas.place import Place as PlaceSchema
 
 
 def trip_to_response(trip: Trip, conversation_id: int | None = None) -> TripResponse:
+    conversation = trip.conversation[0] if trip.conversation else None
+
     return TripResponse(
         id=trip.id,
-        conversation_id=conversation_id,
+        conversation_id=(
+            conversation.id
+            if conversation
+            else conversation_id
+        ),
         city=trip.city,
         days=trip.days,
         user_id=trip.user_id,
         is_saved=True,
+        messages=conversation.messages if conversation else [],
         itinerary=[
             PlanSchema(
                 day=dp.day,
                 places=[
                     PlaceSchema(
                         name=p.name,
-                        type=p.type
+                        type=p.type,
                     )
                     for p in dp.places
-                ]
+                ],
             )
             for dp in trip.plans
-        ]
+        ],
     )
 
 

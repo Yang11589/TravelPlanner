@@ -1,57 +1,68 @@
-import { useMemo, useRef } from "react";
-import { useLocation } from "react-router-dom";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useLocation, useParams } from "react-router-dom";
 import {
   AssistantRuntimeProvider,
   useLocalRuntime,
 } from "@assistant-ui/react";
-import { sendChatMessage } from "../api/api";
+import { getTripById, sendChatMessage } from "../api/api";
 import { Thread } from "../components/assistant-ui/thread.aui";
 
-function formatItinerary(itinerary) {
+function formatItinerary(itinerary = []) {
   return itinerary
     .map((day) => {
-      const places = day.places
+      const places = (day.places ?? [])
         .map((place) => {
           const type = place.type === "food" ? "food" : "sight";
-          return `- ${type}：${place.name}`;
+          return `- ${type}: ${place.name}`;
         })
         .join("\n");
 
-      return `### Day ${day.day} \n${places}`;
+      return `### Day ${day.day}\n${places}`;
     })
     .join("\n\n");
 }
 
 
 function ConversationContent() {
+  const { tripId } = useParams();
   const { state } = useLocation();
+  const [plan, setPlan] = useState(tripId ? null : state);
 
-  const plan = state ?? {
-    city: "",
-    days: 1,
-    itinerary: [],
-    tripId: null,
-  };
+  useEffect(() => {
+    if (!tripId) {
+      return;
+    }
 
-  const itineraryRef = useRef(plan.itinerary);
+    getTripById(tripId).then((response) => {
+      setPlan({
+        ...response.data,
+        tripId: response.data.id,
+      });
+    });
+  }, [tripId]);
+
+  if (!plan) {
+    return <p>Loading conversation...</p>;
+  }
+
+  return <ConversationThread plan={plan} />;
+}
+
+function ConversationThread({ plan }) {
+  const itineraryRef = useRef(plan.itinerary ?? []);
 
   const initialMessages = useMemo(
-  () => [
-    {
-      id: "initial-user-message",
-      role: "user",
-      content: `Generate a ${plan.city} ${plan.days} day travel plan.`,
-    },
-    {
-      id: "initial-assistant-message",
-      role: "assistant",
-      content: `Good, here is the ${plan.city} ${plan.days} day travel plan generated for you:\n\n${formatItinerary(
-        plan.itinerary,
-      )}`,
-    },
-  ],
-  [plan.city, plan.days, plan.itinerary],
-);
+    () =>
+      (plan.messages ?? []).map((message, index, messages) => ({
+        id: String(message.id),
+        role: message.role,
+        content:
+          index === messages.length - 1 && message.role === "assistant"
+            ? `${message.content}\n\n${formatItinerary(plan.itinerary ?? [])}`
+            : message.content,
+      })),
+    [plan.messages, plan.itinerary],
+  );
 
   const chatModel = {
     async run({ messages }) {
@@ -65,36 +76,26 @@ function ConversationContent() {
           .map((part) => part.text)
           .join("") ?? "";
 
-      const history = messages.map((item) => ({
-        role: item.role,
-        content:
-          item.content
-            ?.filter((part) => part.type === "text")
-            .map((part) => part.text)
-            .join("") ?? "",
-      }));
-
       const response = await sendChatMessage({
         message,
-        history,
         city: plan.city,
         days: plan.days,
         current_itinerary: itineraryRef.current,
-        trip_id: plan.tripId,
+        trip_id: plan.tripId ?? plan.id ?? null,
       });
 
       itineraryRef.current = response.itinerary;
 
       return {
-        content: [
-          {
-            type: "text",
-            text: `${response.assistant_reply}\n\n${formatItinerary(
-              response.itinerary,
-            )}`,
-          },
-        ],
-      };
+  content: [
+    {
+      type: "text",
+      text: `${response.assistant_reply}\n\n${formatItinerary(
+        response.itinerary ?? [],
+      )}`,
+    },
+  ],
+};
     },
   };
 

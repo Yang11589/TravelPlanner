@@ -68,7 +68,7 @@ def get_trip(trip_id: int, db: Session = Depends(get_db), current_user: Optional
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Not authenticated"
         )
-    trip = get_trip_by_id(db, trip_id)
+    trip = get_trip_by_id(db, trip_id, current_user.id)
 
     if not trip:
         raise HTTPException(status_code=404, detail="Trip not found")

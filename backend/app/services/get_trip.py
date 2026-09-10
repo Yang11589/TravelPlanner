@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session, joinedload
 from app.models.trip import Trip
 from app.models.plan import Plan
 from sqlalchemy import desc
+from app.models.conversation import Conversation
 
 
 def get_trips(db: Session, user_id: int, limit: int = 10, offset: int = 0):
@@ -13,8 +14,8 @@ def get_trips(db: Session, user_id: int, limit: int = 10, offset: int = 0):
     trips = (
         query
         .options(
-            joinedload(Trip.plans)
-            .joinedload(Plan.places)
+            joinedload(Trip.plans).joinedload(Plan.places),
+            joinedload(Trip.conversation).joinedload(Conversation.messages),
         )
         .order_by(desc(Trip.id))
         .offset(offset)
