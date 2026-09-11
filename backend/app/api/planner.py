@@ -18,7 +18,13 @@ from app.models.user import User
 from typing import Optional
 
 from app.services.modify_plan import generate_modified_plan
-from app.services.create_conversation import create_trip_for_user, get_or_create_conversation, append_message, update_trip_itinerary
+from app.services.create_conversation import (
+    create_trip_for_user,
+    get_or_create_conversation,
+    append_message,
+    append_assistant_message,
+    update_trip_itinerary,
+)
 from app.models.trip import Trip
 from app.models.message import Message
 
@@ -175,14 +181,13 @@ def chat_plan(
         result["itinerary"],
     )
 
-    append_message(
-        db,
-        conversation.id,
-        "assistant",
-        result["assistant_reply"],
-        result["is_valid_topic"],
+    append_assistant_message(
+        db=db,
+        conversation_id=conversation.id,
+        content=result["assistant_reply"],
+        itinerary=result["itinerary"],
+        is_valid_topic=result["is_valid_topic"],
     )
-
 
     return {
         "assistant_reply": result["assistant_reply"],

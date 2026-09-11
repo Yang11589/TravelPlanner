@@ -1,12 +1,15 @@
 from pydantic import BaseModel
 from typing import List
 from datetime import datetime
+from typing import Optional
+from app.schemas.itinerary_version import ItineraryVersionResponse
 
 class Message(BaseModel):
     id: int
-    role: str  
+    role: str
     content: str
-    is_valid_topic: int  
+    is_valid_topic: int
+    itinerary_version: Optional[ItineraryVersionResponse] = None
     created_at: datetime
 
     class Config:

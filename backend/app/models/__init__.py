@@ -5,3 +5,4 @@ from app.models.place import Place
 from app.models.user import User
 from app.models.conversation import Conversation
 from app.models.message import Message
+from app.models.itinerary_version import ItineraryVersion

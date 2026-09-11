@@ -13,5 +13,12 @@ class Message(Base):
     is_valid_topic = Column(Integer, default=1)  # 1 for valid itinerary question, 0 for off-topic
     created_at = Column(DateTime, default=datetime.utcnow)
 
+    itinerary_version = relationship(
+    "ItineraryVersion",
+    back_populates="message",
+    uselist=False,
+    cascade="all, delete-orphan",
+)
+
     # Relationship
     conversation = relationship("Conversation", back_populates="messages")

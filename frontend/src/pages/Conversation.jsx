@@ -53,15 +53,20 @@ function ConversationThread({ plan }) {
 
   const initialMessages = useMemo(
     () =>
-      (plan.messages ?? []).map((message, index, messages) => ({
-        id: String(message.id),
-        role: message.role,
-        content:
-          index === messages.length - 1 && message.role === "assistant"
-            ? `${message.content}\n\n${formatItinerary(plan.itinerary ?? [])}`
-            : message.content,
-      })),
-    [plan.messages, plan.itinerary],
+      (plan.messages ?? []).map((message) => {
+        const itinerary =
+          message.itinerary_version?.itinerary ?? [];
+
+        return {
+          id: String(message.id),
+          role: message.role,
+          content:
+            message.role === "assistant" && itinerary.length > 0
+              ? `${message.content}\n\n${formatItinerary(itinerary)}`
+              : message.content,
+        };
+      }),
+    [plan.messages],
   );
 
   const chatModel = {
@@ -87,15 +92,15 @@ function ConversationThread({ plan }) {
       itineraryRef.current = response.itinerary;
 
       return {
-  content: [
-    {
-      type: "text",
-      text: `${response.assistant_reply}\n\n${formatItinerary(
-        response.itinerary ?? [],
-      )}`,
-    },
-  ],
-};
+        content: [
+          {
+            type: "text",
+            text: `${response.assistant_reply}\n\n${formatItinerary(
+              response.itinerary ?? [],
+            )}`,
+          },
+        ],
+      };
     },
   };
 
