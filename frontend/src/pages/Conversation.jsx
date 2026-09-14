@@ -7,6 +7,23 @@ import {
 import { getTripById, sendChatMessage } from "../api/api";
 import { Thread } from "../components/assistant-ui/thread.aui";
 
+function createInitialMessages(plan) {
+  return [
+    {
+      id: "initial-user-message",
+      role: "user",
+      content: `Generate a ${plan.city} ${plan.days} day travel plan.`,
+    },
+    {
+      id: "initial-assistant-message",
+      role: "assistant",
+      content: `Good, here is the ${plan.city} ${plan.days} day travel plan generated for you:\n\n${formatItinerary(
+        plan.itinerary ?? [],
+      )}`,
+    },
+  ];
+}
+
 function formatItinerary(itinerary = []) {
   return itinerary
     .map((day) => {
@@ -51,9 +68,11 @@ function ConversationContent() {
 function ConversationThread({ plan }) {
   const itineraryRef = useRef(plan.itinerary ?? []);
 
-  const initialMessages = useMemo(
-    () =>
-      (plan.messages ?? []).map((message) => {
+  const initialMessages = useMemo(() => {
+    const savedMessages = plan.messages ?? [];
+
+    if (savedMessages.length > 0) {
+      return savedMessages.map((message) => {
         const itinerary =
           message.itinerary_version?.itinerary ?? [];
 
@@ -65,9 +84,11 @@ function ConversationThread({ plan }) {
               ? `${message.content}\n\n${formatItinerary(itinerary)}`
               : message.content,
         };
-      }),
-    [plan.messages],
-  );
+      });
+    }
+
+    return createInitialMessages(plan);
+  }, [plan]);
 
   const chatModel = {
     async run({ messages }) {
@@ -117,8 +138,10 @@ function ConversationThread({ plan }) {
 
 export default function ConversationPage() {
   return (
-    <div className="h-[calc(100vh-64px)]">
-      <ConversationContent />
+    <div className="h-screen pt-16">
+      <div className="h-[calc(100vh-4rem)]">
+        <ConversationContent />
+      </div>
     </div>
   );
 }
