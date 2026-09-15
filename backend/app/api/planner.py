@@ -88,7 +88,7 @@ def remove_trip(trip_id: int, db: Session = Depends(get_db), current_user: Optio
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Not authenticated"
         )
-    success = delete_trip(db, trip_id)
+    success = delete_trip(db, trip_id, current_user.id)
 
     if not success:
         raise HTTPException(status_code=404, detail="Trip not found")
