@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import ChatPage from "./pages/Chat";
 import TripsPage from "./pages/TripRecord";
 import Navbar from "./components/Navbar";
@@ -17,6 +17,7 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/conversation" element={<ConversationPage />} />
         <Route path="/conversation/:tripId" element={<ConversationPage />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
 
       </Routes>
     </BrowserRouter>

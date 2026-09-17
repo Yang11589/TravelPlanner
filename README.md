@@ -58,6 +58,7 @@ Open a terminal in the project root and run:
 cd backend
 .venv\Scripts\activate.bat
 pip install -r requirements.txt
+uvicorn app.main:app --reload
 ```
 Set the Google Gemini API key:
 

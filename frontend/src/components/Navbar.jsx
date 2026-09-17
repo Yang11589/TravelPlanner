@@ -13,21 +13,24 @@ const Navbar = () => {
   // Check user status on mount and when location changes
   const checkUserStatus = async () => {
     const token = localStorage.getItem('access_token');
-    if (token) {
+    const hasValidToken = token && token !== 'undefined' && token !== 'null';
+
+    if (hasValidToken) {
       try {
         const response = await getCurrentUser();
         setUsername(response.data.username);
         setIsLoggedIn(true);
       } catch (err) {
-        // Token might be invalid or expired, clear localStorage and reset state
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('user_id');
-        localStorage.removeItem('username');
+        if (err.response?.status === 401) {
+          localStorage.removeItem('access_token');
+          localStorage.removeItem('user_id');
+          localStorage.removeItem('username');
+        }
         setIsLoggedIn(false);
         setUsername(null);
-        console.error('Token validation failed:', err);
       }
     } else {
+      localStorage.removeItem('access_token');
       setIsLoggedIn(false);
       setUsername(null);
     }
